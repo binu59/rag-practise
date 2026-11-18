@@ -1,0 +1,11 @@
+Acme Cloud offers three plans: Starter, Pro, and Enterprise. The Starter plan costs 10 dollars per month and 
+includes 1 project and 5 GB of storage. The Pro plan costs 30 dollars per month and includes 10 projects and 
+100 GB of storage. The Enterprise plan has custom pricing and includes unlimited projects, SSO login, and a 
+dedicated support manager.
+
+Acme Cloud support is available Monday to Friday, 9 AM to 6 PM. Starter users get email support with a 48 
+hour response time. Pro users get email and chat support with a 12 hour response time. Enterprise users get 
+a phone line and a dedicated manager.
+
+To cancel a subscription, go to Settings, then Billing, then click Cancel Plan. Refunds are available within 
+14 days of the first payment. After that, you keep access until the end of the billing period.
