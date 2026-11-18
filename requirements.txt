@@ -1,4 +1,4 @@
 fastapi
 uvicorn
-rank_bm25
+pinecone
 groq
