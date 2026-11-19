@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Document Q&A</title>
+  <style>
+    body { font-family: sans-serif; max-width: 700px; margin: 30px auto; padding: 0 15px; }
+    #chat { margin: 15px 0; }
+    .msg { padding: 8px 12px; margin: 6px 0; border-radius: 8px; white-space: pre-wrap; }
+    .user { background: #e8f0fe; }
+    .bot { background: #f1f3f4; }
+    input[type=text] { width: 70%; padding: 8px; }
+    button { padding: 8px 14px; }
+    #status { color: #555; }
+  </style>
+</head>
+<body>
+  <h2>Ask your document</h2>
+  <input type="file" id="file" accept=".pdf,.txt,.md">
+  <button onclick="upload()">Upload</button>
+  <p id="status">Upload a document to begin.</p>
+
+  <div id="chat"></div>
+  <input type="text" id="q" placeholder="Ask a question..."
+         onkeydown="if (event.key === 'Enter') ask()">
+  <button onclick="ask()">Ask</button>
+
+  <script>
+    let namespace = null;
+    let history = [];
+
+    function add(role, text) {
+      const d = document.createElement("div");
+      d.className = "msg " + role;
+      d.textContent = text;
+      document.getElementById("chat").appendChild(d);
+    }
+
+    async function upload() {
+      const f = document.getElementById("file").files[0];
+      const status = document.getElementById("status");
+      if (!f) { status.textContent = "Choose a file first."; return; }
+      status.textContent = "Uploading and indexing...";
+      const form = new FormData();
+      form.append("file", f);
+      const r = await fetch("/upload", { method: "POST", body: form });
+      const data = await r.json();
+      if (!r.ok) { status.textContent = "Error: " + (data.detail || r.status); return; }
+      namespace = data.namespace;
+      history = [];
+      document.getElementById("chat").innerHTML = "";
+      status.textContent = "Ready: " + data.filename + " (" + data.chunks + " chunks)";
+    }
+
+    async function ask() {
+      const input = document.getElementById("q");
+      const q = input.value.trim();
+      if (!q) return;
+      if (!namespace) { document.getElementById("status").textContent = "Upload a document first."; return; }
+      input.value = "";
+      add("user", q);
+      const r = await fetch("/ask", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: q, namespace: namespace, history: history })
+      });
+      const data = await r.json();
+      if (!r.ok) { add("bot", "Error: " + (data.detail || r.status)); return; }
+      add("bot", data.answer);
+      history.push({ role: "user", content: q });
+      history.push({ role: "assistant", content: data.answer });
+    }
+  </script>
+</body>
+</html>

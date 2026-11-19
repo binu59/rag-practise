@@ -2,3 +2,6 @@ fastapi
 uvicorn
 pinecone
 groq
+langchain-text-splitters
+pypdf
+python-multipart
